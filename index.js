@@ -87,3 +87,75 @@ function fadeOut(){
 }
 
 window.onload = fadeOut;
+
+//   FORMDATA OBJECT
+
+document.addEventListener('DOMContentLoaded', () => {
+  document
+    .getElementById('myForm')
+    .addEventListener('submit', handleForm);
+});
+
+function handleForm(ev) {
+  ev.preventDefault(); //stop the page reloading
+  //console.dir(ev.target);
+  let myForm = ev.target;
+  let fd = new FormData(myForm);
+
+  //add more things that were not in the form
+  fd.append('api-key', 'myApiKey');
+
+  //look at all the contents
+  for (let key of fd.keys()) {
+    console.log(key, fd.get(key));
+  }
+  let json = convertFD2JSON(fd);
+
+  //send the request with the formdata
+  let url = 'http://localhost:3000/';
+  let h = new Headers();
+  h.append('Content-type', 'application/json');
+
+  let req = new Request(url, {
+    headers: h,
+    body: json,
+    method: 'POST',
+  });
+  //console.log(req);
+  fetch(req)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log('Response from server');
+      console.log(data);
+    })
+    .catch(console.warn);
+}
+
+function convertFD2JSON(formData) {
+  let obj = {};
+  for (let key of formData.keys()) {
+    obj[key] = formData.get(key);
+  }
+  return JSON.stringify(obj);
+}
+
+
+// EMAIL API AREA
+function myFunction(){
+  alert("Order Sucessfully")
+}
+/*
+const options = {
+	method: 'POST',
+	headers: {
+		'content-type': 'application/json',
+		'X-RapidAPI-Host': 'rapidprod-sendgrid-v1.p.rapidapi.com',
+		'X-RapidAPI-Key': '5ba92f2e22msh2579ddf0aa5092dp120629jsn23a29759afa2'
+	},
+	body: '{"personalizations":[{"to":[{"email":"onifadeadebimpe2@gmail.com"}],"subject":"FOR A TEST"}],"from":{"email":"Graffvillage@gmail.com"},"content":[{"type":"text/html","value":"FOR A TEST"}]}'
+};
+
+fetch('https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send', options)
+	.then(response => response.json())
+	.then(response => console.log(response))
+	.catch(err => console.error(err));*/
